@@ -69,7 +69,6 @@ func handlePhys(delta: float):
 					motion.y = SMALL_JUMP_THRESHOLD
 		#endregion
 	#endregion
-	
 	#region Air Shit
 	if LAUNCH_FRAMES <= 0 and boundByMaxFallSpeed:
 		if motion.y > MAX_FALL_SPEED:
