@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://f2ed4peinq2i"]
+
+[ext_resource type="Script" uid="uid://drx6wyenod757" path="res://Gamestuffs/Fighterstuffs/Fighter.gd" id="1_x0v8s"]
+[ext_resource type="Texture2D" uid="uid://cmoq71gkqkumm" path="res://icon.svg" id="2_q57i6"]
+[ext_resource type="Script" uid="uid://d1dshjyspi4wq" path="res://Gamestuffs/Fighterstuffs/StateMachinery/StMch.gd" id="3_y1bak"]
+[ext_resource type="Script" uid="uid://kjfotp4nc46g" path="res://Gamestuffs/Fighterstuffs/StateMachinery/StPtrn.gd" id="4_ive66"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hsonh"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_q57i6")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hsonh"]
+size = Vector2(128, 128)
+
+[node name="Player" type="CharacterBody2D" unique_id=1055169119 node_paths=PackedStringArray("STATE_MACHINE")]
+script = ExtResource("1_x0v8s")
+ACCELERATION_WALK = 1200.0
+ACCELERATION_RUN = 1800.0
+MAX_WALK_SPEED = 400.0
+MAX_RUN_SPEED = 600.0
+DECELERATION = 1200.0
+BRAKE_SPEED = 2500.0
+WEIGHT = 1800.0
+STATE_MACHINE = NodePath("StateMachinery")
+
+[node name="Spritery" type="AnimatedSprite2D" parent="." unique_id=1086466696]
+sprite_frames = SubResource("SpriteFrames_hsonh")
+
+[node name="Collisiony" type="CollisionShape2D" parent="." unique_id=71596136]
+shape = SubResource("RectangleShape2D_hsonh")
+
+[node name="StateMachinery" type="Node" parent="." unique_id=46247510 node_paths=PackedStringArray("fighter")]
+script = ExtResource("3_y1bak")
+fighter = NodePath("..")
+
+[node name="Default" type="Node" parent="StateMachinery" unique_id=1032228592]
+script = ExtResource("4_ive66")

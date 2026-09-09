@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c2urcxnda2gsl"]
+
+[ext_resource type="PackedScene" uid="uid://c34nrgelkqhc3" path="res://Gamestuffs/Mapstuffs/Battlefieldlike/Battlefieldlike.tscn" id="1_wmjmx"]
+[ext_resource type="PackedScene" uid="uid://f2ed4peinq2i" path="res://Gamestuffs/Fighterstuffs/Fighter.tscn" id="2_ll7to"]
+
+[node name="Node2D" type="Node2D" unique_id=1080482853]
+
+[node name="BattlefieldLike" parent="." unique_id=243784060 instance=ExtResource("1_wmjmx")]
+
+[node name="Fighters" type="Node2D" parent="." unique_id=116685545]
+
+[node name="Player" parent="Fighters" unique_id=1055169119 instance=ExtResource("2_ll7to")]
+position = Vector2(427, 234)
