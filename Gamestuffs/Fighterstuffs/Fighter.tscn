@@ -4,6 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://cmoq71gkqkumm" path="res://icon.svg" id="2_q57i6"]
 [ext_resource type="Script" uid="uid://d1dshjyspi4wq" path="res://Gamestuffs/Fighterstuffs/StateMachinery/StMch.gd" id="3_y1bak"]
 [ext_resource type="Script" uid="uid://kjfotp4nc46g" path="res://Gamestuffs/Fighterstuffs/StateMachinery/StPtrn.gd" id="4_ive66"]
+[ext_resource type="Script" uid="uid://c74w5atooae0f" path="res://Gamestuffs/Fighterstuffs/StateMachinery/States/FloorMain.gd" id="5_q57i6"]
+[ext_resource type="Script" uid="uid://oy6ohe07vd6x" path="res://Gamestuffs/Fighterstuffs/StateMachinery/States/AirMain.gd" id="6_y1bak"]
+[ext_resource type="Script" uid="uid://byi003bjlny4f" path="res://Gamestuffs/Fighterstuffs/FighterUtils.gd" id="7_ive66"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_hsonh"]
 animations = [{
@@ -19,7 +22,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hsonh"]
 size = Vector2(128, 128)
 
-[node name="Player" type="CharacterBody2D" unique_id=1055169119 node_paths=PackedStringArray("STATE_MACHINE")]
+[node name="Player" type="CharacterBody2D" unique_id=1055169119 node_paths=PackedStringArray("STATE_MACHINE", "UTILS")]
 script = ExtResource("1_x0v8s")
 ACCELERATION_WALK = 1200.0
 ACCELERATION_RUN = 1800.0
@@ -29,6 +32,7 @@ DECELERATION = 1200.0
 BRAKE_SPEED = 2500.0
 WEIGHT = 1800.0
 STATE_MACHINE = NodePath("StateMachinery")
+UTILS = NodePath("FighterUtils")
 
 [node name="Spritery" type="AnimatedSprite2D" parent="." unique_id=1086466696]
 sprite_frames = SubResource("SpriteFrames_hsonh")
@@ -42,3 +46,15 @@ fighter = NodePath("..")
 
 [node name="Default" type="Node" parent="StateMachinery" unique_id=1032228592]
 script = ExtResource("4_ive66")
+
+[node name="FloorMain" type="Node" parent="StateMachinery" unique_id=1736786572]
+script = ExtResource("5_q57i6")
+
+[node name="AirMain" type="Node" parent="StateMachinery" unique_id=1745582395]
+script = ExtResource("6_y1bak")
+
+[node name="FighterUtils" type="Node" parent="." unique_id=1475734000]
+script = ExtResource("7_ive66")
+metadata/_custom_type_script = "uid://byi003bjlny4f"
+
+[node name="AirdodgeTimer" type="Timer" parent="." unique_id=2102616997]

@@ -13,8 +13,8 @@ func _ready() -> void:
 		nodely.stateName = nodely.name
 		nodely.setup()
 	
-	currentState = $Idle
-	previousState = $Idle
+	currentState = $AirMain
+	previousState = $Default
 
 func changeState(state:FitStPtrn):
 	previousState = currentState
@@ -27,4 +27,10 @@ func changeStateByName(state:String):
 		if nodely.stateName == state:
 			changeState(nodely)
 			return
-	print("Esse estado nao existe bro")
+	print("Esse estado (", state, ") nao existe bro")
+
+func _physics_process(delta: float) -> void:
+	if fighter.STUN_FRAMES > 0: return
+	
+	if currentState:
+		currentState.update()
