@@ -39,39 +39,64 @@ var motion:Vector2 = Vector2.ZERO
 
 var AIRDODGED:bool = false
 
-var INPUT_BUFFER:Array = []
-var INPUT_BUFFER_FRAMES:int = 20
+var COMBO_LENIENCY:float = 0.1
 #endregion
 
 #region Cool Teknix
-var inputtableControls:Array[StringName] = [
-	"ctrl_left",
-	"ctrl_right",
-	"ctrl_down",
-	"ctrl_up",
-	"ctrl_A",
-	"ctrl_B",
-	"ctrl_Z",
-	"ctrl_X",
-	"ctrl_R",
-	"ctrl_L"
-]
+var actionList = [
+		"ctrl_left",
+		"ctrl_down",
+		"ctrl_up",
+		"ctrl_right",
+		"ctrl_A",
+		"ctrl_B",
+		"ctrl_X",
+		"ctrl_Y",
+		"ctrl_Z",
+		"ctrl_R",
+		"ctrl_L"
+	]
+var lastPressStr:Dictionary = {}
 
-func handleInputBuffer():
-	var now = Engine.get_process_frames()
-	INPUT_BUFFER = INPUT_BUFFER.filter(func(e): return now - e.frame < INPUT_BUFFER_FRAMES)
+func _input(event: InputEvent) -> void:
+	for action in actionList:
+		if event.is_action_pressed(action):
+			lastPressStr[action] = [Time.get_ticks_msec() / 1000.0, event.get_action_strength(action)]
+
+func check_multiple_input(actions:Array[String]):
+	for action in actions:
+		if not lastPressStr.has(action):
+			return false
 	
-	for cont in inputtableControls:
-		if Input.is_action_just_pressed(cont):
-			INPUT_BUFFER.append({"action": cont, "frame": now, "releasedFrames": -1})
-		if Input.is_action_just_released(cont):
-			for inp in INPUT_BUFFER:
-				if inp.action == cont and inp.releasedFrames == -1:
-					inp.releasedFrames = now - inp.frame
-					print(INPUT_BUFFER)
+	var firstInputTime:float = -1
+	var lastInputTime:float = 0
+	
+	for action in actions:
+		if (firstInputTime == -1) \
+		or (firstInputTime > lastPressStr[action][0]):
+			firstInputTime = lastPressStr[action][0]
+		
+		if (lastInputTime < lastPressStr[action][0]):
+			lastInputTime = lastPressStr[action][0]
+	
+	var isTrued:bool = abs(firstInputTime - lastInputTime) <= COMBO_LENIENCY
+	
+	if isTrued:
+		for action in actions:
+			lastPressStr.erase(action)
+	
+	return isTrued
 
-func resetInputBuffer():
-	INPUT_BUFFER = []
+func check_Press_Justpress(pressed:Array[String], justPressed:Array[String]):
+	for action in pressed:
+		if not Input.is_action_pressed(action):
+			return false
+	
+	for action in justPressed:
+		if not Input.is_action_just_pressed(action):
+			return false
+	
+	return true
 #endregion
 
 #region Cool Physics
@@ -126,44 +151,76 @@ func on_land():
 #endregion
 
 #region Cool Stateness
-# quick advice: for every attack that has a *, means it's an alternative keybind!
-var groundAttackAwesomes: Dictionary = {
-	"AttackJab":      ["ctrl_A"],
-	"AttackTiltSide":  ["ctrl_right", "ctrl_A"],
-	"AttackTiltSide*": ["ctrl_left", "ctrl_A"],
-	"AttackTiltU":    ["ctrl_up", "ctrl_A"],
-	"AttackTiltD":    ["ctrl_down", "ctrl_A"],
-}
-
-var aerialAttackAwesomes: Dictionary = {
-	"AttackAirN": ["ctrl_A"],
-	"AttackAirSide":  ["ctrl_right", "ctrl_A"],
-	"AttackAirSide*": ["ctrl_left", "ctrl_A"],
-	"AttackAirU": ["ctrl_up", "ctrl_A"],
-	"AttackAirD": ["ctrl_down", "ctrl_A"],
-}
-
-var specialAwesomes: Dictionary = {
-	"SpecialN": ["ctrl_B"],
-	"SpecialF":  ["ctrl_B", "ctrl_right"],
-	"SpecialF*": ["ctrl_B", "ctrl_left"],
-	"SpecialU": ["ctrl_B", "ctrl_up"],
-	"SpecialD": ["ctrl_B", "ctrl_down"],
-}
-
-func handleAttackBuffer():
-	#todo: do this
-	#whats needed:
-		# differentiate between tilt and smash
-		# jab combo
-		# aerials
-		# specials
-	pass
+func handleAttackInput():
+	# todo: change All these prints for Actual states
+	# Or functions that change the state
+	# iunno
+	
+	# specialshit
+	if check_Press_Justpress(["ctrl_left"], ["ctrl_B"]) \
+	or check_Press_Justpress(["ctrl_right"], ["ctrl_B"]):
+		print("side special")
+	elif check_Press_Justpress(["ctrl_up"], ["ctrl_B"]):
+		print("up special")
+	elif check_Press_Justpress(["ctrl_down"], ["ctrl_B"]):
+		print("down special")
+	elif Input.is_action_just_pressed("ctrl_B"):
+		print("neutral special")
+	
+	# groundshit
+	if is_on_floor():
+		# smash/tilt
+		# forward smash (left)
+		if check_multiple_input(["ctrl_left", "ctrl_A"]):
+			if Input.get_action_strength("ctrl_left") > 0.75:
+				print("left smash")
+			else:
+				print("left tilt")
+		# forward smash (right)
+		elif check_multiple_input(["ctrl_right", "ctrl_A"]):
+			if Input.get_action_strength("ctrl_right") > 0.75:
+				print("right smash")
+			else:
+				print("right tilt")
+		# up smash
+		elif check_multiple_input(["ctrl_up", "ctrl_A"]):
+			if Input.get_action_strength("ctrl_up") > 0.75:
+				print("up smash")
+			else:
+				print("up tilt")
+		# down smash
+		elif check_multiple_input(["ctrl_down", "ctrl_A"]):
+			if Input.get_action_strength("ctrl_down") > 0.75:
+				print("down smash")
+			else:
+				print("down tilt")
+		elif Input.is_action_just_pressed("ctrl_A"):
+			#todo: dash attack
+			print("start jab")
+	else:
+		# forward/back air
+		if check_Press_Justpress(["ctrl_left"], ["ctrl_A"]) \
+		or check_Press_Justpress(["ctrl_right"], ["ctrl_A"]):
+			var axis:float = Input.get_axis("ctrl_left", "ctrl_right")
+			var facedDir:float = -1.0 if SPRITE.flip_h else 1.0
+			
+			if sign(axis) != sign(facedDir):
+				print("back air")
+			else:
+				print("forward air")
+		# up air
+		elif check_Press_Justpress(["ctrl_up"], ["ctrl_A"]):
+			print("up air")
+		# down air
+		elif check_Press_Justpress(["ctrl_down"], ["ctrl_A"]):
+			print("down air")
+		# neutral air
+		elif Input.is_action_just_pressed("ctrl_A"):
+			print("neut air")
 #endregion
 
 func _physics_process(delta: float) -> void:
-	handleInputBuffer()
-	handleAttackBuffer()
+	handleAttackInput() # maybe this should go on the individual states instead of here?
 	
 	if STUN_FRAMES > 0:
 		STUN_FRAMES -= 1

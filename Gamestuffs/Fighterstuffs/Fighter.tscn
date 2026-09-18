@@ -22,7 +22,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hsonh"]
 size = Vector2(128, 128)
 
-[node name="Player" type="CharacterBody2D" unique_id=1055169119 node_paths=PackedStringArray("STATE_MACHINE", "UTILS")]
+[node name="Player" type="CharacterBody2D" unique_id=1055169119 node_paths=PackedStringArray("STATE_MACHINE", "UTILS", "SPRITE")]
 script = ExtResource("1_x0v8s")
 ACCELERATION_WALK = 1200.0
 ACCELERATION_RUN = 1800.0
@@ -33,6 +33,7 @@ BRAKE_SPEED = 2500.0
 WEIGHT = 1800.0
 STATE_MACHINE = NodePath("StateMachinery")
 UTILS = NodePath("FighterUtils")
+SPRITE = NodePath("Spritery")
 
 [node name="Spritery" type="AnimatedSprite2D" parent="." unique_id=1086466696]
 sprite_frames = SubResource("SpriteFrames_hsonh")
